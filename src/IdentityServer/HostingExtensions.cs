@@ -11,8 +11,11 @@ internal static class HostingExtensions
 
 
         builder.Services.AddIdentityServer()
+            .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
-            .AddInMemoryClients(Config.Clients);
+            .AddInMemoryClients(Config.Clients)
+            .AddTestUsers(TestUsers.Users);
+
 
         // JR Template
         //builder.Services.AddIdentityServer(options =>
