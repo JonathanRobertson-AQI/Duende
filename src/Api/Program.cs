@@ -21,6 +21,16 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
+// checks for the presence of "api1" scope in the access token
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "api1");
+    });
+});
+
 
 var app = builder.Build();
 
@@ -42,6 +52,8 @@ app.UseAuthorization();
 
 app.UseAuthorization();
 
-app.MapControllers();
+// JR Added - optional, sets policy for api1 scope for controllers
+app.MapControllers().RequireAuthorization("ApiScope");
+//app.MapControllers();
 
 app.Run();
