@@ -1,3 +1,5 @@
+using Duende.IdentityServer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace IdentityServer;
@@ -26,6 +28,31 @@ internal static class HostingExtensions
         //    .AddInMemoryIdentityResources(Config.IdentityResources)
         //    .AddInMemoryApiScopes(Config.ApiScopes)
         //    .AddInMemoryClients(Config.Clients);
+
+        builder.Services.AddAuthentication()
+            .AddGoogle("Google", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.ClientId = "redacted";
+                options.ClientSecret = "...";
+            })
+            .AddOpenIdConnect("oidc", "Demo IdentityServer", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+                options.SaveTokens = true;
+
+                options.Authority = "https://demo.duendesoftware.com";
+                options.ClientId = "interactive.confidential";
+                options.ClientSecret = "secret";
+                options.ResponseType = "code";
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                };
+            });
 
         return builder.Build();
     }
